@@ -1,34 +1,47 @@
 import React, { Component } from 'react';
 import { createRoot } from 'react-dom/client';
 
-class Counter extends Component {
-  static defaultProps = {
-    step: 1,
-    initialGood: 0,
-    initialNeutral: 0,
-    initialBad: 0,
-  };
+const Section = ({ title, children }) => (
+  <section>
+    <h2>{title}</h2>
+    {children}
+  </section>
+);
 
+const Statistics = ({ good, neutral, bad, total, positivePercentage }) => (
+  <div>
+    <p>Good: {good}</p>
+    <p>Neutral: {neutral}</p>
+    <p>Bad: {bad}</p>
+    <p>Total: {total}</p>
+    <p>Positive feedback: {positivePercentage}%</p>
+  </div>
+);
+
+const FeedbackOptions = ({ options, onLeaveFeedback }) => (
+  <div>
+    {options.map(option => (
+      <button
+        key={option}
+        type="button"
+        onClick={() => onLeaveFeedback(option)}
+      >
+        {option}
+      </button>
+    ))}
+  </div>
+);
+
+class App extends Component {
   state = {
-    good: this.props.initialGood,
-    neutral: this.props.initialNeutral,
-    bad: this.props.initialBad,
+    good: 0,
+    neutral: 0,
+    bad: 0,
   };
 
-  handleGood = evt => {
-    this.setState((state, props) => ({
-      good: state.good + props.step,
-    }));
-  };
-
-  handleNeutral = evt => {
-    this.setState((state, props) => ({
-      neutral: state.neutral + props.step,
-    }));
-  };
-  handleBad = evt => {
-    this.setState((state, props) => ({
-      bad: state.bad + props.step,
+  handleLeaveFeedback = option => {
+    this.setState(prevState => ({
+      [option]: prevState[option] + 1,
     }));
   };
 
@@ -44,32 +57,32 @@ class Counter extends Component {
   };
 
   render() {
-    const totalFeedback = this.countTotalFeedback();
-    const positiveFeedbackPercentage = this.countPositiveFeedbackPercentage();
+    const { good, neutral, bad } = this.state;
+    const total = this.countTotalFeedback();
+    const positivePercentage = this.countPositiveFeedbackPercentage();
+    const options = ['good', 'neutral', 'bad'];
 
     return (
       <div>
-        <h1>Please leave feedback</h1>
-        <span></span>
-        <button type="button" onClick={this.handleGood}>
-          Good
-        </button>
-        <button type="button" onClick={this.handleNeutral}>
-          Neutral
-        </button>
-        <button type="button" onClick={this.handleBad}>
-          Bad
-        </button>
-        <h2>Statistics</h2>
-        <p>Good: {this.state.good}</p>
-        <p>Neutral: {this.state.neutral}</p>
-        <p>Bad: {this.state.bad}</p>
-        <p>Total: {totalFeedback}</p>
-        <p>Positive feedback: {positiveFeedbackPercentage}%</p>
+        <Section title="Please leave feedback">
+          <FeedbackOptions
+            options={options}
+            onLeaveFeedback={this.handleLeaveFeedback}
+          />
+        </Section>
+        <Section title="Statistics">
+          <Statistics
+            good={good}
+            neutral={neutral}
+            bad={bad}
+            total={total}
+            positivePercentage={positivePercentage}
+          />
+        </Section>
       </div>
     );
   }
 }
 
 const root = createRoot(document.getElementById('root'));
-root.render(<Counter />);
+root.render(<App />);
