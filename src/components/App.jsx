@@ -31,11 +31,15 @@ class App extends Component {
   render() {
     const { good, neutral, bad } = this.state;
     const totalFeedback = this.countTotalFeedback();
+    const options = ['good', 'neutral', 'bad'];
 
     return (
       <div>
         <Section title="Leave Feedback">
-          <FeedbackOptions onLeaveFeedback={this.handleLeaveFeedback} />
+          <FeedbackOptions
+            options={options}
+            onLeaveFeedback={this.handleLeaveFeedback}
+          />
         </Section>
 
         <Section title="Statistics">
